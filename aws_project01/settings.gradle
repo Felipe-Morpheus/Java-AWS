@@ -1,7 +1,11 @@
 pluginManagement {
 	repositories {
+		// Define o repositório Maven para buscar plugins Spring Boot Snapshot
 		maven { url 'https://repo.spring.io/snapshot' }
+		// Define o Gradle Plugin Portal como repositório padrão para buscar plugins Gradle
 		gradlePluginPortal()
 	}
 }
+
+// Define o nome do projeto raiz como 'aws_project01'
 rootProject.name = 'aws_project01'

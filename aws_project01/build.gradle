@@ -1,69 +1,79 @@
+// Define extensões (variáveis) para o projeto
 buildscript {
 	ext {
-		springBootVersion = '3.2.6-SNAPSHOT'
+		springBootVersion = '3.2.6-SNAPSHOT' // Versão do Spring Boot
 	}
+	// Define os repositórios Maven para buscar plugins e dependências
 	repositories {
-		mavenCentral()
+		mavenCentral() // Repositório Maven Central padrão
 		maven {
-			url "https://plugins.gradle.org/m2"
+			url "https://plugins.gradle.org/m2" // Repositório para plugins Gradle
 		}
 	}
+	// Define as dependências do buildscript, incluindo o plugin do Spring Boot
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 		//classpath('com.palantir.gradle.docker:gradle-docker:0.35.0')
 	}
 }
 
+// Define os plugins a serem aplicados ao projeto
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.6-SNAPSHOT'
-	id 'io.spring.dependency-management' version '1.1.4'
-	id 'com.palantir.docker' version '0.35.0'
-
+	id 'java' // Plugin Java para compilar código Java
+	id 'org.springframework.boot' version '3.2.6-SNAPSHOT' // Plugin do Spring Boot
+	id 'io.spring.dependency-management' version '1.1.4' // Plugin para gerenciamento de dependências do Spring
+	id 'com.palantir.docker' version '0.35.0' // Plugin para Docker
 }
 
-group = 'vulpicula'
-version = '0.0.1-SNAPSHOT'
+// Configurações gerais do projeto
+group = 'vulpicula' // Grupo do projeto
+version = '0.0.1-SNAPSHOT' // Versão do projeto
+
 java {
-	sourceCompatibility = '17'
+	sourceCompatibility = '17' // Versão de compatibilidade do Java
 }
 
+// Configurações específicas para a task 'bootJar' (criação do arquivo JAR do Spring Boot)
 bootJar {
-	archiveFileName = 'curso_aws_project01'
-	destinationDirectory = file("$buildDir/libs")
-	version = '1.0.0'
+	archiveFileName = 'curso_aws_project01' // Nome do arquivo JAR
+	destinationDirectory = file("$buildDir/libs") // Diretório de destino do arquivo JAR
+	version = '1.0.0' // Versão do arquivo JAR
 }
 
+// Task para descompactar o arquivo JAR do Spring Boot
 tasks.register('unpack', Copy) {
 	dependsOn bootJar
 	from(zipTree(tasks.bootJar.outputs.files.singleFile))
 	into("build/dependency")
 }
 
+// Configurações para o plugin do Docker
 docker {
-	name "${project.group}/${project.name}"
-	tags "${project.version}"
+	name "${project.group}/${project.name}" // Nome da imagem Docker
+	tags "${project.version}" // Tags da imagem Docker
 	copySpec.from(tasks.unpack.outputs).into('dependency')
 	buildArgs(['DEPENDENCY' : "dependency"])
 	buildx true
 	platform 'linux/amd64'
 }
 
+// Define os repositórios Maven para buscar dependências
 repositories {
-	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
-	maven { url 'https://repo.spring.io/snapshot' }
+	mavenCentral() // Repositório Maven Central padrão
+	maven { url 'https://repo.spring.io/milestone' } // Repositório de marcos do Spring
+	maven { url 'https://repo.spring.io/snapshot' } // Repositório de snapshots do Spring
 }
 
+// Define as dependências do projeto
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-web' // Starter do Spring Boot para desenvolvimento web
+	implementation 'org.springframework.boot:spring-boot-starter-actuator' // Starter do Spring Boot para endpoints de saúde e monitoramento
 
-
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Starter do Spring Boot para testes
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // Launcher do JUnit Platform para testes
 }
 
+// Configurações específicas para a task 'test' (execução de testes)
 tasks.named('test') {
 	useJUnitPlatform()
 }
