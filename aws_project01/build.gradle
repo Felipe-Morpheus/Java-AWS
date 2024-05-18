@@ -68,7 +68,9 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web' // Starter do Spring Boot para desenvolvimento web
 	implementation 'org.springframework.boot:spring-boot-starter-actuator' // Starter do Spring Boot para endpoints de saúde e monitoramento
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Starter do Spring Boot para acessar o banco de dados
 
+	implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.7.0' // Dependência para o cliente JDBC do MariaDB
 	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Starter do Spring Boot para testes
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // Launcher do JUnit Platform para testes
 }
