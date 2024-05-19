@@ -25,17 +25,17 @@ public class RdsStack extends Stack {
                 .description("The RDS instance password")
                 .build();
 
-        // Obtém o grupo de segurança padrão da VPC e adiciona uma regra de saída para o porto 3306 (MySQL)
+        // Obtém o grupo de segurança padrão da VPC e adiciona uma regra de saída para o porto 5432 (PostgreSQL)
         ISecurityGroup securityGroup = SecurityGroup.fromSecurityGroupId(this, "DefaultSecurityGroup", vpc.getVpcDefaultSecurityGroup());
-        securityGroup.addEgressRule(Peer.anyIpv4(), Port.tcp(3306));
+        securityGroup.addEgressRule(Peer.anyIpv4(), Port.tcp(5432)); // Porto padrão do PostgreSQL
 
-        // Cria uma instância de banco de dados RDS com as configurações especificadas
+        // Cria uma instância de banco de dados RDS com as configurações especificadas para o PostgreSQL
         DatabaseInstance databaseInstance = DatabaseInstance.Builder
                 .create(this, "Rds01")
                 .instanceIdentifier("aws-project01-db") // Identificador da instância
-                .engine(DatabaseInstanceEngine.mysql(
-                        MySqlInstanceEngineProps.builder()
-                                .version(MysqlEngineVersion.VER_5_7) // Versão do MySQL
+                .engine(DatabaseInstanceEngine.postgres(
+                        PostgresInstanceEngineProps.builder()
+                                .version(PostgresEngineVersion.VER_12_7) // Versão do PostgreSQL
                                 .build()))
                 .vpc(vpc) // VPC onde o RDS será criado
                 .credentials(Credentials.fromUsername("admin",

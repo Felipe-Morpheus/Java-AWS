@@ -7,9 +7,9 @@ import jakarta.persistence.*;
 @Entity // Anotação para indicar que essa classe é uma entidade JPA
 public class Product {
 
-    @Id // Anotação para indicar a chave primária
-    @GeneratedValue(strategy = GenerationType.AUTO) // Estratégia de geração automática do ID
-    private long id; // Identificador único do produto
+    @Id // Anotação para identificar chave primária
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Estratégia de autoincremento para PostgreSQL
+    private Long id; // Identificador único do produto
 
     @Column(length = 32, nullable = false) // Anotação para configurar a coluna 'name' no banco de dados
     private String name; // Nome do produto
@@ -22,14 +22,15 @@ public class Product {
 
     private float price; // Preço do produto
 
-
+    @Column(length = 16, nullable = false) // Anotação para configurar a coluna 'color' no banco de dados
+    private String color; // Cor do produto
 
     // Métodos getters e setters para acessar e modificar os atributos privados da entidade
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -63,5 +64,13 @@ public class Product {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }

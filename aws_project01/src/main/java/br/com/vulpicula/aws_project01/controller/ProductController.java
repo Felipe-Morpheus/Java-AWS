@@ -9,73 +9,74 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController // Indica que esta classe é um controlador REST
-@RequestMapping("/api/products") // Define o caminho base para as requisições deste controlador
+@RestController// Indica que esta classe é um controlador REST
+@RequestMapping("/api/products") // Define o caminho base para todos os endpoints neste controlador
 public class ProductController {
 
-    private ProductRepository productRepository; // Injeção de dependência do repositório
+    @Autowired// Indica que a injeção de dependência deve ser feita automaticamente pelo Spring
+    private ProductRepository productRepository; // Injeta uma instância de ProductRepository para acessar os dados do banco
 
-    @Autowired // Indica que a injeção de dependência deve ser feita automaticamente pelo Spring
+    @Autowired// Indica que a injeção de dependência deve ser feita automaticamente pelo Spring
     public ProductController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+        this.productRepository = productRepository; // Injeta a instância de ProductRepository no construtor
     }
 
-    @GetMapping // Mapeia requisições GET para a raiz do caminho base (/api/products)
+    @GetMapping // Define um endpoint HTTP GET para retornar todos os produtos
     public Iterable<Product> findAll() {
-        return productRepository.findAll(); // Retorna todos os produtos do banco de dados
+        return productRepository.findAll(); // Chama o método findAll do repository para obter todos os produtos
     }
 
-    @GetMapping("/{id}") // Mapeia requisições GET para o caminho /api/products/{id}
+    @GetMapping("/{id}") // Define um endpoint HTTP GET para retornar um produto por ID
     public ResponseEntity<Product> findById(@PathVariable long id) {
-        Optional<Product> optProduct = productRepository.findById(id);
+        Optional<Product> optProduct = productRepository.findById(id); // Busca um produto por ID no repository
         if (optProduct.isPresent()) {
-            return ResponseEntity.ok(optProduct.get()); // Retorna o produto encontrado com status 200 OK
+            return ResponseEntity.ok(optProduct.get()); // Retorna o produto encontrado
         } else {
-            return ResponseEntity.notFound().build(); // Retorna status 404 Not Found se o produto não for encontrado
+            return ResponseEntity.notFound().build(); // Retorna 404 se o produto não for encontrado
         }
     }
 
-    @PostMapping // Mapeia requisições POST para o caminho /api/products
+    @PostMapping // Define um endpoint HTTP POST para salvar um novo produto
     public ResponseEntity<Product> saveProduct(@RequestBody Product product) {
-        Product productCreated = productRepository.save(product); // Salva o produto no banco de dados
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(productCreated); // Retorna o produto criado com status 201 Created
+        Product productCreated = productRepository.save(product); // Salva um novo produto no banco de dados
+        return ResponseEntity.status(HttpStatus.CREATED).body(productCreated); // Retorna o produto criado com status 201
     }
 
-    @PutMapping("/{id}") // Mapeia requisições PUT para o caminho /api/products/{id}
+    @PutMapping("/{id}") // Define um endpoint HTTP PUT para atualizar um produto por ID
     public ResponseEntity<Product> updateProduct(@RequestBody Product product, @PathVariable("id") long id) {
+        Optional<Product> existingProduct = productRepository.findByCode(product.getCode()); // Busca um produto pelo código
+        if (existingProduct.isPresent() && existingProduct.get().getId() != id) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // Retorna 409 Conflict se o código já existir para outro produto
+        }
+
         if (productRepository.existsById(id)) {
-            product.setId(id); // Define o ID do produto com o ID da requisição
-
+            product.setId(id); // Define o ID do produto a ser atualizado
             Product productUpdated = productRepository.save(product); // Atualiza o produto no banco de dados
-
-            return ResponseEntity.ok(productUpdated); // Retorna o produto atualizado com status 200 OK
+            return ResponseEntity.ok(productUpdated); // Retorna o produto atualizado
         } else {
-            return ResponseEntity.notFound().build(); // Retorna status 404 Not Found se o produto não for encontrado
+            return ResponseEntity.notFound().build(); // Retorna 404 se o produto não for encontrado para atualização
         }
     }
 
-    @DeleteMapping(path = "/{id}") // Mapeia requisições DELETE para o caminho /api/products/{id}
+    @DeleteMapping("/{id}") // Define um endpoint HTTP DELETE para excluir um produto por ID
     public ResponseEntity<Product> deleteProduct(@PathVariable("id") long id) {
-        Optional<Product> optProduct = productRepository.findById(id);
+        Optional<Product> optProduct = productRepository.findById(id); // Busca um produto por ID para exclusão
         if (optProduct.isPresent()) {
-            Product product = optProduct.get();
-
-            productRepository.delete(product); // Deleta o produto do banco de dados
-
-            return new ResponseEntity<Product>(product, HttpStatus.OK); // Retorna o produto deletado com status 200 OK
+            Product product = optProduct.get(); // Obtém o produto encontrado
+            productRepository.delete(product); // Exclui o produto do banco de dados
+            return new ResponseEntity<>(HttpStatus.OK); // Retorna 200 OK após a exclusão
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Retorna status 404 Not Found se o produto não for encontrado
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Retorna 404 se o produto não for encontrado para exclusão
         }
     }
 
-    @GetMapping(path = "/bycode") // Mapeia requisições GET para o caminho /api/products/bycode
+    @GetMapping("/bycode") // Define um endpoint HTTP GET para retornar um produto por código
     public ResponseEntity<Product> findByCode(@RequestParam String code) {
         Optional<Product> optProduct = productRepository.findByCode(code); // Busca um produto pelo código
         if (optProduct.isPresent()) {
-            return ResponseEntity.ok(optProduct.get()); // Retorna o produto encontrado com status 200 OK
+            return ResponseEntity.ok(optProduct.get()); // Retorna o produto encontrado
         } else {
-            return ResponseEntity.notFound().build(); // Retorna status 404 Not Found se o produto não for encontrado
+            return ResponseEntity.notFound().build(); // Retorna 404 se o produto não for encontrado pelo código
         }
     }
 }

@@ -24,10 +24,10 @@ public class Service01Stack extends Stack {
 
         // Define variáveis de ambiente para a aplicação
         Map<String, String> envVariables = new HashMap<>();
-        envVariables.put("SPRING_DATASOURCE_URL", "jdbc:mariadb://" + Fn.importValue("rds-enpoint")
-                + ":3306/aws_project01?createDatabaseIfNotExist=true&autoReconnect=true");
-        envVariables.put("SPRING_DATASOURCE_USERNAME", "admin");
-        envVariables.put("SPRING_DATASOURCE_PASSWORD", Fn.importValue("rds-password"));
+        envVariables.put("SPRING_DATASOURCE_URL", "jdbc:postgresql://" + Fn.importValue("rds-endpoint")
+                + ":5432/aws_project01"); // URL do PostgreSQL
+        envVariables.put("SPRING_DATASOURCE_USERNAME", "admin"); // Nome de usuário do PostgreSQL
+        envVariables.put("SPRING_DATASOURCE_PASSWORD", Fn.importValue("rds-password")); // Senha do PostgreSQL
 
         // Cria um serviço Fargate com balanceador de carga
         ApplicationLoadBalancedFargateService service01 = ApplicationLoadBalancedFargateService.Builder.create(this, "ALB01")
