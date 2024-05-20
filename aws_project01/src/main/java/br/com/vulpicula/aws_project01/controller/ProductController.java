@@ -1,7 +1,9 @@
 package br.com.vulpicula.aws_project01.controller;
 
+import br.com.vulpicula.aws_project01.enums.EventType;
 import br.com.vulpicula.aws_project01.model.Product;
 import br.com.vulpicula.aws_project01.repository.ProductRepository;
+import br.com.vulpicula.aws_project01.service.ProductPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,24 +11,25 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController// Indica que esta classe é um controlador REST
+// Indica que esta classe é um controlador REST
+@RestController
 @RequestMapping("/api/products") // Define o caminho base para todos os endpoints neste controlador
 public class ProductController {
 
-    @Autowired// Indica que a injeção de dependência deve ser feita automaticamente pelo Spring
-    private ProductRepository productRepository; // Injeta uma instância de ProductRepository para acessar os dados do banco
+    // Indica que a injeção de dependência deve ser feita automaticamente pelo Spring
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private ProductPublisher productPublisher;
 
-    @Autowired// Indica que a injeção de dependência deve ser feita automaticamente pelo Spring
-    public ProductController(ProductRepository productRepository) {
-        this.productRepository = productRepository; // Injeta a instância de ProductRepository no construtor
-    }
-
-    @GetMapping // Define um endpoint HTTP GET para retornar todos os produtos
+    // Define um endpoint HTTP GET para retornar todos os produtos
+    @GetMapping
     public Iterable<Product> findAll() {
         return productRepository.findAll(); // Chama o método findAll do repository para obter todos os produtos
     }
 
-    @GetMapping("/{id}") // Define um endpoint HTTP GET para retornar um produto por ID
+    // Define um endpoint HTTP GET para retornar um produto por ID
+    @GetMapping("/{id}")
     public ResponseEntity<Product> findById(@PathVariable long id) {
         Optional<Product> optProduct = productRepository.findById(id); // Busca um produto por ID no repository
         if (optProduct.isPresent()) {
@@ -36,33 +39,46 @@ public class ProductController {
         }
     }
 
-    @PostMapping // Define um endpoint HTTP POST para salvar um novo produto
+    // Define um endpoint HTTP POST para salvar um novo produto
+    @PostMapping
     public ResponseEntity<Product> saveProduct(@RequestBody Product product) {
         Product productCreated = productRepository.save(product); // Salva um novo produto no banco de dados
+
+        // Publica um evento de criação de produto
+        productPublisher.publishProductEvents(productCreated, EventType.PRODUCT_CREATED, "matilda");
+
         return ResponseEntity.status(HttpStatus.CREATED).body(productCreated); // Retorna o produto criado com status 201
     }
 
-    @PutMapping("/{id}") // Define um endpoint HTTP PUT para atualizar um produto por ID
-    public ResponseEntity<Product> updateProduct(@RequestBody Product product, @PathVariable("id") long id) {
-        Optional<Product> existingProduct = productRepository.findByCode(product.getCode()); // Busca um produto pelo código
-        if (existingProduct.isPresent() && existingProduct.get().getId() != id) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // Retorna 409 Conflict se o código já existir para outro produto
-        }
-
+    // Define um endpoint HTTP PUT para atualizar um produto por ID
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(
+            @RequestBody Product product, @PathVariable("id") long id){
         if (productRepository.existsById(id)) {
-            product.setId(id); // Define o ID do produto a ser atualizado
-            Product productUpdated = productRepository.save(product); // Atualiza o produto no banco de dados
-            return ResponseEntity.ok(productUpdated); // Retorna o produto atualizado
+            product.setId(id);
+
+            Product productUpdated = productRepository.save(product);
+
+            // Publica um evento de atualização de produto
+            productPublisher.publishProductEvents(productUpdated, EventType.PRODUCT_UPDATE, "doralice");
+
+            return new ResponseEntity<Product>(productUpdated,
+                    HttpStatus.OK);
         } else {
-            return ResponseEntity.notFound().build(); // Retorna 404 se o produto não for encontrado para atualização
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @DeleteMapping("/{id}") // Define um endpoint HTTP DELETE para excluir um produto por ID
+    // Define um endpoint HTTP DELETE para excluir um produto por ID
+    @DeleteMapping("/{id}")
     public ResponseEntity<Product> deleteProduct(@PathVariable("id") long id) {
         Optional<Product> optProduct = productRepository.findById(id); // Busca um produto por ID para exclusão
         if (optProduct.isPresent()) {
             Product product = optProduct.get(); // Obtém o produto encontrado
+
+            // Publica um evento de exclusão de produto
+            productPublisher.publishProductEvents(product, EventType.PRODUCT_DELETE, "hannah");
+
             productRepository.delete(product); // Exclui o produto do banco de dados
             return new ResponseEntity<>(HttpStatus.OK); // Retorna 200 OK após a exclusão
         } else {
@@ -70,7 +86,8 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/bycode") // Define um endpoint HTTP GET para retornar um produto por código
+    // Define um endpoint HTTP GET para retornar um produto por código
+    @GetMapping("/bycode")
     public ResponseEntity<Product> findByCode(@RequestParam String code) {
         Optional<Product> optProduct = productRepository.findByCode(code); // Busca um produto pelo código
         if (optProduct.isPresent()) {

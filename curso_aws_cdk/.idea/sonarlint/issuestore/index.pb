@@ -17,3 +17,5 @@ U
 cdk.json,4\c\4cfd58be69b99d63dc5b0f5b434573a206386cd5
 U
 %src/main/java/com/myorg/RdsStack.java,1\9\1988388ff5710971c7203a2d369aa0d1f01f0fac
+U
+%src/main/java/com/myorg/SnsStack.java,1\9\190d24916c4d04f419bc8b9657444c2ddcdd0469

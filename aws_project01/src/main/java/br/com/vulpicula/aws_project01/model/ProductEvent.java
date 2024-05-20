@@ -1,0 +1,35 @@
+package br.com.vulpicula.aws_project01.model;
+
+// Classe para representar um evento relacionado a um produto
+public class ProductEvent {
+
+    private long productId; // ID do produto associado ao evento
+    private String code; // Código relacionado ao evento
+    private String username; // Nome de usuário associado ao evento
+
+    // Métodos getter e setter para os atributos da classe
+
+    public long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(long productId) {
+        this.productId = productId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+}

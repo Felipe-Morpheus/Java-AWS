@@ -69,6 +69,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator' // Starter do Spring Boot para endpoints de saúde e monitoramento
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Starter do Spring Boot para acessar o banco de dados
 
+	implementation 'com.amazonaws:aws-java-sdk-sns:1.12.725' // Oferece recursos pra publicar eventos de um topico dentro da aplicacão
+
 	implementation 'org.postgresql:postgresql:42.3.1' // Dependência para o driver JDBC do PostgreSQL
 	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Starter do Spring Boot para testes
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // Launcher do JUnit Platform para testes
