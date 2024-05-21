@@ -5,6 +5,7 @@ import br.com.vulpicula.aws_project01.model.Envelope;
 import br.com.vulpicula.aws_project01.model.Product;
 import br.com.vulpicula.aws_project01.model.ProductEvent;
 import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.model.PublishResult;
 import com.amazonaws.services.sns.model.Topic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,8 +57,16 @@ public class ProductPublisher {
             // Converte os objetos Envelope e ProductEvent em strings JSON
             envelope.setData(objectMapper.writeValueAsString(productEvent));
 
-            // Publica a mensagem JSON no tópico SNS
-            snsClient.publish(productEventsTopic.getTopicArn(), objectMapper.writeValueAsString(envelope));
+            // Publica a mensagem JSON no tópico SNS e obtém o resultado da publicação
+            PublishResult publishResult = snsClient.publish(
+                    productEventsTopic.getTopicArn(),
+                    objectMapper.writeValueAsString(envelope));
+
+            // Registra um log informativo com os detalhes da publicação bem-sucedida
+            LOG.info("Product event sent - Event: {} - ProductId: {} - MessageId: {}",
+                    envelope.getEventType(),
+                    productEvent.getProductId(),
+                    publishResult.getMessageId());
 
         } catch (JsonProcessingException e) {
             // Registra um erro se houver algum problema ao criar a mensagem JSON

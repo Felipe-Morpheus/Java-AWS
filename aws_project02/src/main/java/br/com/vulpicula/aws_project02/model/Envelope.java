@@ -1,18 +1,18 @@
 package br.com.vulpicula.aws_project02.model;
 
-import br.com.vulpicula.aws_project02.enums.EventyType;
+import br.com.vulpicula.aws_project02.enums.EventType;
 
 public class Envelope {
 
-    private EventyType eventyType;
+    private EventType eventType;
     private String data;
 
-    public EventyType getEventyType() {
-        return eventyType;
+    public EventType EventType() {
+        return eventType;
     }
 
-    public void setEventyType(EventyType eventyType) {
-        this.eventyType = eventyType;
+    public void EventType(EventType eventType) {
+        this.eventType = eventType;
     }
 
     public String getData() {

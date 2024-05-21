@@ -43,6 +43,9 @@ public class ProductEventConsumer {
         // Aqui você pode adicionar lógica para processar o evento do produto conforme necessário
 
         // Log do evento recebido
-        log.info("Received product event: {}", productEvent);
+        log.info("Product event received -Event:{} - ProductId: {} - MessageId {}",
+                envelope.EventType(),
+                productEvent.getProductId(),
+                snsMessage.getMessageId());
     }
 }
