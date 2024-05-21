@@ -30,7 +30,7 @@ public class ProductEventLog {
 
     // Carimbo de data/hora do evento
     @DynamoDBAttribute(attributeName = "timestamp")
-    private String timestamp;
+    private long timestamp;
 
     // Tempo de vida do registro na tabela
     @DynamoDBAttribute(attributeName = "ttl")
@@ -89,11 +89,11 @@ public class ProductEventLog {
         this.username = username;
     }
 
-    public String getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 

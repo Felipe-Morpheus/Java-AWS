@@ -34,6 +34,8 @@ public class ProductEventConsumer {
         this.producEventLogRepository = producEventLogRepository;
     }
 
+
+
     // Método para ouvir mensagens da fila SQS
     @JmsListener(destination = "${aws.sqs.queue.product.events.name}")
     public void receiveProductEvent(TextMessage textMessage) throws JMSException, IOException {
@@ -70,7 +72,7 @@ public class ProductEventConsumer {
         productEventLog.setEventType(envelope.getEventType());    // Define o tipo de evento do produto no log
         productEventLog.setProductId(productEvent.getProductId());  // Define o ID do produto no log
         productEventLog.setUsername(productEvent.getUsername()); // Define o nome de usuário associado ao evento no log
-        productEventLog.setTimestamp(String.valueOf(timestamp));  // Define o timestamp do log como uma string representando o timestamp atual
+        productEventLog.setTimestamp(Long.valueOf(timestamp));  // Define o timestamp do log como uma string representando o timestamp atual
         productEventLog.setTtl(Instant.now().plus(Duration.ofMinutes(10)).toEpochMilli()); // Define o TTL (time to live) do log como o timestamp atual mais 10 minutos em milissegundos
 
 
