@@ -61,6 +61,8 @@ repositories {
 	mavenCentral() // Repositório Maven Central padrão
 	maven { url 'https://repo.spring.io/milestone' } // Repositório de marcos do Spring
 	maven { url 'https://repo.spring.io/snapshot' } // Repositório de snapshots do Spring
+	maven { url 'https://mvnrepository.com/artifact/software.amazon.awssdk' } //Repositório Maven da AWS
+
 }
 
 // Dependências do projeto
@@ -70,10 +72,16 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Starter do Spring Boot para acessar o banco de dados
 
 	implementation 'com.amazonaws:aws-java-sdk-sns:1.12.725' // SDK da AWS para SNS (Amazon Simple Notification Service)
+	implementation 'com.amazonaws:aws-java-sdk-sns:1.12.725' // SDK da AWS para SNS (Amazon Simple Notification Service)
 	implementation 'com.amazonaws:aws-java-sdk-sqs:1.11.887' // SDK da AWS para SQS (Amazon Simple Queue Service)
 	implementation 'org.springframework:spring-jms:5.2.9.RELEASE' // Spring JMS para suporte a mensagens assíncronas
 	implementation 'com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8' // Biblioteca Java para integração com o SQS da AWS
+
+	implementation group: 'software.amazon.awssdk', name: 'dynamodb', version: '2.25.56' // SDK da AWS (Amazon DynamoDB)
+	implementation group: 'io.github.boostchicken', name: 'spring-data-dynamodb', version: '5.2.1' // Tabela do DynamoDB em vez de qualquer tabela como Postgress
+
 	implementation 'org.postgresql:postgresql:42.3.1' // Dependência para o driver JDBC do PostgreSQL
+
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Starter do Spring Boot para testes
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // Launcher do JUnit Platform para testes

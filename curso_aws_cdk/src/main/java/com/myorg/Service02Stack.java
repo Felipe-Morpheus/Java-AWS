@@ -2,6 +2,7 @@ package com.myorg;
 
 import software.amazon.awscdk.*;
 import software.amazon.awscdk.services.applicationautoscaling.EnableScalingProps;
+import software.amazon.awscdk.services.dynamodb.Table;
 import software.amazon.awscdk.services.ecs.*;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedFargateService;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskImageOptions;
@@ -19,12 +20,12 @@ import java.util.Map;
 public class Service02Stack extends Stack {
 
     // Construtor(1) que aceita scope, id e cluster, delegando para o outro construtor com props como null
-    public Service02Stack(final Construct scope, final String id, Cluster cluster, SnsTopic productEventsTopic) {
-        this(scope, id, null, cluster, productEventsTopic);
+    public Service02Stack(final Construct scope, final String id, Cluster cluster, SnsTopic productEventsTopic, Table productEventsDdb) {
+        this(scope, id, null, cluster, productEventsTopic, productEventsDdb);
     }
 
     // Construtor(2) principal que inicializa a stack com scope, id, props e cluster
-    public Service02Stack(final Construct scope, final String id, final StackProps props, Cluster cluster, SnsTopic productEventsTopic) {
+    public Service02Stack(final Construct scope, final String id, final StackProps props, Cluster cluster, SnsTopic productEventsTopic,Table productEventsDdb) {
         super(scope, id, props);
 
         // Cria uma fila SQS para eventos do produto
@@ -98,5 +99,6 @@ public class Service02Stack extends Stack {
 
         // Concede permissão para publicar no tópico SNS
         productEventsQueuee.grantConsumeMessages(service02.getTaskDefinition().getTaskRole());
+        productEventsDdb.grantReadWriteData(service02.getTaskDefinition().getTaskRole());
     }
 }

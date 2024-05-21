@@ -34,14 +34,17 @@ public class CursoAwsCdkApp {
         service01Stack.addDependency(rdsStack);
         service01Stack.addDependency(snsStack);
 
+        // Cria a pilha DdbStack, que gerencia a criação de uma tabela DynamoDB
+        DdbStack ddbStack = new DdbStack(app, "Ddb");
 
         // Cria a pilha Service02Stack, passando o cluster criado pelo ClusterStack e o tópico SNS do SnsStack
         Service02Stack service02Stack = new Service02Stack(app, "Service02",
-                clusterStack.getCluster(), snsStack.getProductEventTopic());
+                clusterStack.getCluster(), snsStack.getProductEventTopic(), ddbStack.getProductEventDynamoDb());
 
-        // Define dependências para garantir que ClusterStack e SnsStack sejam criadas antes de Service02Stack
+        // Define dependências para garantir que ClusterStack, SnsStack e DdbStack sejam criadas antes de Service02Stack
         service02Stack.addDependency(clusterStack);
         service02Stack.addDependency(snsStack);
+        service02Stack.addDependency(ddbStack);
 
         // Sintetiza a aplicação CDK
         app.synth();

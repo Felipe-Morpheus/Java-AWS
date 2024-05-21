@@ -10,8 +10,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Versão do AWS CDK -->
         <cdk.version>2.142.0</cdk.version>
+        <!-- Faixa de versão para a biblioteca Constructs -->
         <constructs.version>[10.0.0,11.0.0)</constructs.version>
+        <!-- Versão do JUnit Jupiter -->
         <junit.version>5.7.1</junit.version>
         <!-- Versão do driver JDBC do PostgreSQL -->
         <postgresql.version>42.2.24</postgresql.version>
@@ -27,12 +30,21 @@
             <version>${cdk.version}</version>
         </dependency>
 
+        <!-- AWS SDK for DynamoDB -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb</artifactId>
+            <version>2.25.56</version>
+        </dependency>
+
+        <!-- Biblioteca Constructs -->
         <dependency>
             <groupId>software.constructs</groupId>
             <artifactId>constructs</artifactId>
             <version>${constructs.version}</version>
         </dependency>
 
+        <!-- JUnit Jupiter para testes unitários -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -40,7 +52,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Dependências para PostgreSQL -->
+        <!-- Dependência para o driver JDBC do PostgreSQL -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -57,6 +69,7 @@
 
     <build>
         <plugins>
+            <!-- Plugin para o compilador do Maven -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -66,11 +79,13 @@
                 </configuration>
             </plugin>
 
+            <!-- Plugin para execução de classes Java -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
+                    <!-- Classe principal do aplicativo -->
                     <mainClass>com.myorg.CursoAwsCdkApp</mainClass>
                 </configuration>
             </plugin>

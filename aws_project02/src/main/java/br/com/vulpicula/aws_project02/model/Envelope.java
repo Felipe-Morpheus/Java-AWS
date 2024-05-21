@@ -7,11 +7,11 @@ public class Envelope {
     private EventType eventType;
     private String data;
 
-    public EventType EventType() {
+    public EventType getEventType() {
         return eventType;
     }
 
-    public void EventType(EventType eventType) {
+    public void setEventType(EventType eventType) {
         this.eventType = eventType;
     }
 
