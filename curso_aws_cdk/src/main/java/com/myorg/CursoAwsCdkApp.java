@@ -34,7 +34,16 @@ public class CursoAwsCdkApp {
         service01Stack.addDependency(rdsStack);
         service01Stack.addDependency(snsStack);
 
-        // Sintetiza a aplicação CDK (gera o CloudFormation necessário)
+
+        // Cria a pilha Service02Stack, passando o cluster criado pelo ClusterStack e o tópico SNS do SnsStack
+        Service02Stack service02Stack = new Service02Stack(app, "Service02",
+                clusterStack.getCluster(), snsStack.getProductEventTopic());
+
+        // Define dependências para garantir que ClusterStack e SnsStack sejam criadas antes de Service02Stack
+        service02Stack.addDependency(clusterStack);
+        service02Stack.addDependency(snsStack);
+
+        // Sintetiza a aplicação CDK
         app.synth();
     }
 }

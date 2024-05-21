@@ -1,0 +1,85 @@
+buildscript {
+	ext {
+		springBootVersion = '3.2.5-SNAPSHOT' // Versão do Spring Boot
+	}
+	// Define os repositórios Maven para buscar plugins e dependências
+	repositories {
+		mavenCentral() // Repositório Maven Central padrão
+		maven {
+			url "https://plugins.gradle.org/m2" // Repositório para plugins Gradle
+		}
+	}
+	// Define as dependências do buildscript, incluindo o plugin do Spring Boot
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		//classpath('com.palantir.gradle.docker:gradle-docker:0.35.0')
+	}
+}
+
+// Plugins aplicados ao projeto
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.5'
+	id 'io.spring.dependency-management' version '1.1.4'
+	id 'com.palantir.docker' version '0.35.0' // Plugin para Docker
+}
+
+// Configurações do projeto
+group = 'br.com.vulpicula'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+// Configurações da tarefa 'bootJar'
+bootJar {
+	archiveFileName = 'curso_aws_project02' // Nome do arquivo JAR
+	destinationDirectory = file("$buildDir/libs") // Diretório de destino do arquivo JAR
+	version = '1.0.0' // Versão do arquivo JAR
+}
+
+// Task para descompactar o arquivo JAR do Spring Boot
+tasks.register('unpack', Copy) {
+	dependsOn bootJar
+	from(zipTree(tasks.bootJar.outputs.files.singleFile))
+	into("build/dependency")
+}
+
+// Configurações para o plugin do Docker
+docker {
+	name "${project.group}/${project.name}" // Nome da imagem Docker
+	tags "${project.version}" // Tags da imagem Docker
+	copySpec.from(tasks.unpack.outputs).into('dependency')
+	buildArgs(['DEPENDENCY' : "dependency"])
+	buildx true
+	platform 'linux/amd64'
+}
+
+// Repositórios Maven para buscar dependências
+repositories {
+	mavenCentral() // Repositório Maven Central padrão
+	maven { url 'https://repo.spring.io/milestone' } // Repositório de marcos do Spring
+	maven { url 'https://repo.spring.io/snapshot' } // Repositório de snapshots do Spring
+}
+
+// Dependências do projeto
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web' // Starter do Spring Boot para desenvolvimento web
+	implementation 'org.springframework.boot:spring-boot-starter-actuator' // Starter do Spring Boot para endpoints de saúde e monitoramento
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Starter do Spring Boot para acessar o banco de dados
+
+	implementation 'com.amazonaws:aws-java-sdk-sns:1.12.725' // SDK da AWS para SNS (Amazon Simple Notification Service)
+	implementation 'com.amazonaws:aws-java-sdk-sqs:1.11.887' // SDK da AWS para SQS (Amazon Simple Queue Service)
+	implementation 'org.springframework:spring-jms:5.2.9.RELEASE' // Spring JMS para suporte a mensagens assíncronas
+	implementation 'com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8' // Biblioteca Java para integração com o SQS da AWS
+	implementation 'org.postgresql:postgresql:42.3.1' // Dependência para o driver JDBC do PostgreSQL
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Starter do Spring Boot para testes
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // Launcher do JUnit Platform para testes
+}
+
+// Configurações específicas para a task 'test'
+tasks.named('test') {
+	useJUnitPlatform()
+}
