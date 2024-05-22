@@ -1,10 +1,8 @@
 package com.myorg;
 
+import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.RemovalPolicy;
-import software.amazon.awscdk.services.dynamodb.Attribute;
-import software.amazon.awscdk.services.dynamodb.AttributeType;
-import software.amazon.awscdk.services.dynamodb.BillingMode;
-import software.amazon.awscdk.services.dynamodb.Table;
+import software.amazon.awscdk.services.dynamodb.*;
 import software.constructs.Construct;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
@@ -40,6 +38,17 @@ public class DdbStack extends Stack {
                 .timeToLiveAttribute("ttl")
                 .removalPolicy(RemovalPolicy.DESTROY) // Política de remoção: destruir a tabela quando o stack é destruído
                 .build();
+
+        // Configura o autoscaling para a capacidade de leitura da tabela DynamoDB
+        productEventsDdb.autoScaleReadCapacity(EnableScalingProps.builder()
+                        .minCapacity(1) // Capacidade mínima de leitura
+                        .maxCapacity(4) // Capacidade máxima de leitura
+                        .build())
+                .scaleOnUtilization(UtilizationScalingProps.builder()
+                        .targetUtilizationPercent(50) // Percentual de utilização alvo
+                        .scaleInCooldown(Duration.seconds(30)) // Tempo de espera após redução de capacidade (cooldown)
+                        .scaleOutCooldown(Duration.seconds(30)) // Tempo de espera após aumento de capacidade (cooldown)
+                        .build());
     }
 
     // Método para obter a tabela DynamoDB de eventos de produtos
