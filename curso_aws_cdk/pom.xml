@@ -30,6 +30,24 @@
             <version>${cdk.version}</version>
         </dependency>
 
+<!--
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>${cdk.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3-notifications</artifactId>
+            <version>${cdk.version}</version>
+        </dependency>
+-->
+
+
+
+
+
         <!-- AWS SDK for DynamoDB -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>

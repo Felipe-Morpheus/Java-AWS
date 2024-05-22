@@ -7,6 +7,8 @@ import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedFarga
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskImageOptions;
 import software.amazon.awscdk.services.events.targets.SnsTopic;
 import software.amazon.awscdk.services.logs.LogGroup;
+import software.amazon.awscdk.services.s3.Bucket;
+import software.amazon.awscdk.services.sqs.Queue;
 import software.constructs.Construct;
 import software.amazon.awscdk.services.elasticloadbalancingv2.HealthCheck;
 
@@ -15,12 +17,14 @@ import java.util.Map;
 
 public class Service01Stack extends Stack {
     // Construtor que aceita scope, id e cluster, delegando para o outro construtor com props como null
-    public Service01Stack(final Construct scope, final String id, Cluster cluster, SnsTopic productEventsTopic) {
-        this(scope, id, null, cluster, productEventsTopic);
+    public Service01Stack(final Construct scope, final String id, Cluster cluster, SnsTopic productEventsTopic,
+                          Bucket invoiceBucket, Queue invoiceQueue) {
+        this(scope, id, null, cluster, productEventsTopic, invoiceBucket, invoiceQueue);
     }
 
     // Construtor principal que inicializa a stack com scope, id, props e cluster
-    public Service01Stack(final Construct scope, final String id, final StackProps props, Cluster cluster, SnsTopic productEventsTopic) {
+    public Service01Stack(final Construct scope, final String id, final StackProps props, Cluster cluster,
+                          SnsTopic productEventsTopic,Bucket invoiceBucket, Queue invoiceQueue) {
         super(scope, id, props);
 
         // Define variáveis de ambiente para a aplicação
@@ -31,6 +35,8 @@ public class Service01Stack extends Stack {
         envVariables.put("SPRING_DATASOURCE_PASSWORD", Fn.importValue("rds-password")); // Senha do PostgreSQL
         envVariables.put("AWS_REGION", "us-east-1"); // Região da AWS
         envVariables.put("AWS_SNS_TOPIC_PRODUCT_EVENTS_ARN", productEventsTopic.getTopic().getTopicArn());
+        envVariables.put("AWS_S3_BUCKET_INVOICE_NAME", invoiceBucket.getBucketName());
+        envVariables.put("AWS_SQS_QUEUE_INVOICE_EVENTS_NAME", invoiceQueue.getQueueName());
 
         // Cria um serviço Fargate com balanceador de carga
         ApplicationLoadBalancedFargateService service01 = ApplicationLoadBalancedFargateService.Builder.create(this, "ALB01")
@@ -77,5 +83,8 @@ public class Service01Stack extends Stack {
 
         // Concede permissão para publicar no tópico SNS
         productEventsTopic.getTopic().grantPublish(service01.getTaskDefinition().getTaskRole());
+
+        invoiceQueue.grantConsumeMessages(service01.getTaskDefinition().getTaskRole());
+        invoiceBucket.grantReadWrite(service01.getTaskDefinition().getTaskRole());
     }
 }

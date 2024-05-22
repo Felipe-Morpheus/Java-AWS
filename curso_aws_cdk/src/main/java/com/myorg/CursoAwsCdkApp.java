@@ -24,16 +24,18 @@ public class CursoAwsCdkApp {
 
         // Cria a pilha SnsStack, que gerencia a criação de um tópico SNS
         SnsStack snsStack = new SnsStack(app, "Sns");
+        InvoiceAppStack invoiceAppStack = new InvoiceAppStack(app, "InvoiceApp");
 
         // Cria a pilha Service01Stack, passando o cluster criado pelo ClusterStack e o tópico SNS do SnsStack
         Service01Stack service01Stack = new Service01Stack(app, "Service01",
-                clusterStack.getCluster(), snsStack.getProductEventTopic());
+                clusterStack.getCluster(), snsStack.getProductEventTopic(),
+                invoiceAppStack.getBucket(), invoiceAppStack.getS3InvoiceQueue());
 
         // Define dependências para garantir que ClusterStack, RdsStack e SnsStack sejam criadas antes de Service01Stack
         service01Stack.addDependency(clusterStack);
         service01Stack.addDependency(rdsStack);
         service01Stack.addDependency(snsStack);
-
+        service01Stack.addDependency(invoiceAppStack);
         // Cria a pilha DdbStack, que gerencia a criação de uma tabela DynamoDB
         DdbStack ddbStack = new DdbStack(app, "Ddb");
 

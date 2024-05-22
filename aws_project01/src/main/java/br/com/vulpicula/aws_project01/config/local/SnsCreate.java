@@ -13,10 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-// Anotação para indicar que esta classe é uma configuração do Spring
-@Configuration
-// Anotação para especificar que esta configuração será usada apenas no perfil "local"
-@Profile("local")
+@Configuration// Anotação para indicar que esta classe é uma configuração do Spring
+@Profile("local")// Anotação para especificar que esta configuração será usada apenas no perfil "local"
+
 public class SnsCreate {
 
     // Declaração do logger estático final para registro de informações
@@ -30,9 +29,9 @@ public class SnsCreate {
     public SnsCreate() {
         // Configuração do cliente Amazon SNS para o ambiente local
         this.snsClient = AmazonSNSClient.builder()
-                .withEndpointConfiguration(new AwsClientBuilder
-                        .EndpointConfiguration("http://localhost:4566",
-                        Regions.US_EAST_1.getName()))
+                .withEndpointConfiguration(
+                        new AwsClientBuilder.EndpointConfiguration("http://localhost:4566",
+                                Regions.US_EAST_1.getName()))
                 .withCredentials(new DefaultAWSCredentialsProviderChain())
                 .build();
 

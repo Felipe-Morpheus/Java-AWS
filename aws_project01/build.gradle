@@ -69,7 +69,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator' // Starter do Spring Boot para endpoints de saúde e monitoramento
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Starter do Spring Boot para acessar o banco de dados
 
-	implementation 'com.amazonaws:aws-java-sdk-sns:1.12.725' // Oferece recursos pra publicar eventos de um topico dentro da aplicacão
+	implementation 'com.amazonaws:aws-java-sdk-sns:1.12.725' // SNS Oferece recursos pra publicar eventos de um topico dentro da aplicacão
+	implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.726' //Amazon S3
+	implementation 'org.springframework:spring-jms:5.2.9.RELEASE' // Spring JMS para suporte a mensagens assíncronas
+	implementation 'com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8' // Biblioteca Java para integração com o SQS da AWS
+
 
 	implementation 'org.postgresql:postgresql:42.3.1' // Dependência para o driver JDBC do PostgreSQL
 	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Starter do Spring Boot para testes
